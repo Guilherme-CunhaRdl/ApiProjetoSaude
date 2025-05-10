@@ -18,6 +18,19 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/registrar', [UserController::class, 'registrar']);
 Route::post('/login', [UserController::class, 'login']);
+Route::middleware('auth:sanctum')->get('/perfil', function (Request $request) {
+    $user = $request->user();
+    
+    return response()->json([
+        'nome' => $user->nome,
+        'email' => $user->email,
+        'peso' => $user->peso,
+        'altura' => $user->altura,
+        'imagem_url' => $user->imagem_path 
+        ? asset("uploads/{$user->imagem_path}")
+        : asset("uploads/default/avatar.png")
+    ]);
+});
 
 
 //PARTE DO REMEDIO

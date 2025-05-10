@@ -54,7 +54,7 @@ class UserController extends Controller
                 'success' => true,
                 'message' => 'Usuário registrado com sucesso!',
                 'user' => $user,
-                'imagem_url' => asset("storage/$imagemPath")
+                'imagem_url' => asset($imagemPath)
             ], 201);
     
         } catch (\Exception $e) {
@@ -86,4 +86,26 @@ class UserController extends Controller
             ]
         ]);
     }
+
+
+            public function mostrarPerfil(Request $request)
+        {
+           
+            $user = $request->user();
+            
+    
+
+            return response()->json([
+                'nome' => $user->nome,
+                'email' => $user->email,
+                'peso' => $user->peso,
+                'altura' => $user->altura,
+                'imagem_url' => $user->imagem_path 
+                ? asset("storage/{$user->imagem_path}")
+                : asset("storage/default-profile.png")
+            ]);
+        }
+
+
+
 }
