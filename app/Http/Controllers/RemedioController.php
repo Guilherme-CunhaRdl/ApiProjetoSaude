@@ -34,6 +34,7 @@ class RemedioController extends Controller
             'dosagem' => $request->dosagem,
             'frequencia' => $request->frequencia,
             'imagem' => $request->imagem,
+        
         ]);
 
         return response()->json([

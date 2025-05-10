@@ -16,4 +16,9 @@ class Remedio extends Model
         'frequencia',
         'imagem',
     ];
+
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
 }

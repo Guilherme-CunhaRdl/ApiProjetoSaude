@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('dosagem')->nullable();
             $table->string('horario'); 
             $table->string('frequencia')->default('Diário'); 
-            $table->longText('imagem')->nullable(); 
+            $table->longText('imagem_path')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); 
             $table->timestamps(); 
         });
     }

@@ -12,32 +12,58 @@ class UserController extends Controller
 {
     public function registrar(Request $request)
     {
-        // Validação dos dados
+        // Validação
         $validator = Validator::make($request->all(), [
             'nome' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
-            'peso' => 'nullable|string|max:10',
-            'altura' => 'nullable|string|max:10',
+            'peso' => 'required|numeric',
+            'altura' => 'required|numeric',
+            'imagem' => 'required|file|image|mimes:jpeg,png,jpg|max:2048',
         ]);
-
+    
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+                'debug' => [
+                    'received_file' => $request->file('imagem') ? [
+                        'name' => $request->file('imagem')->getClientOriginalName(),
+                        'size' => $request->file('imagem')->getSize(),
+                        'mime' => $request->file('imagem')->getMimeType()
+                    ] : null
+                ]
+            ], 422);
         }
-
-   
-        $user = User::create([
-            'nome' => $request->nome,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'peso' => $request->peso,
-            'altura' => $request->altura,
-        ]);
-
-        return response()->json([
-            'message' => 'Usuário registrado com sucesso!',
-            'user' => $user
-        ], 201);
+    
+        try {
+            // Processamento da imagem
+            $imagemPath = $request->file('imagem')->store('profiles', 'public');
+    
+            // Criação do usuário
+            $user = User::create([
+                'nome' => $request->nome,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'peso' => $request->peso,
+                'altura' => $request->altura,
+                'imagem_path' => $imagemPath // Certifique-se que este campo existe na migration
+            ]);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Usuário registrado com sucesso!',
+                'user' => $user,
+                'imagem_url' => asset("storage/$imagemPath")
+            ], 201);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Erro ao processar imagem',
+                'details' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function login(Request $request)

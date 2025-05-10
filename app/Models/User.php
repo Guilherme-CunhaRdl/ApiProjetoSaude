@@ -18,13 +18,20 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'nome',
-        'email',
-        'password',
-        "password_confirmation",
-        'peso',
-        'altura',
+        'nome', 'email', 'password', 'peso', 'altura', 'imagem_path',
     ];
+
+    public function remedios()
+{
+    return $this->hasMany(Remedio::class);
+}
+
+protected $appends = ['imagem_url'];
+
+public function getImagemUrlAttribute()
+{
+    return $this->imagem ? asset("storage/{$this->imagem}") : null;
+}
 
     /**
      * The attributes that should be hidden for serialization.
