@@ -32,6 +32,8 @@ Route::middleware('auth:sanctum')->get('/perfil', function (Request $request) {
     ]);
 });
 
+Route::middleware('auth:sanctum')->post('/atualizarPerfil', [UserController::class, 'atualizarPerfil']);
+
 
 //PARTE DO REMEDIO
 Route::get('/remedios', [RemedioController::class, 'index']);

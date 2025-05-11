@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -105,6 +106,34 @@ class UserController extends Controller
                 : asset("storage/default-profile.png")
             ]);
         }
+
+
+        public function atualizarPerfil(Request $request)  {
+        
+
+            $validated = $request->validate([
+                'peso' => 'required|numeric',
+                'altura' => 'required|numeric',
+                'imagem' => 'nullable|mimes:jpeg,png,jpg|max:2048' 
+            ]);
+
+            $user = $request->user();
+
+            if ($request->hasFile('imagem')) {
+                $path = $request->file('imagem')->store('profiles', 'public');
+                $validated['imagem_path'] = $path;
+            }
+
+            $user->update($validated);
+
+            return response()->json([
+                'peso' => $user->peso,
+                'altura' => $user->altura,
+                'imagem_url' => isset($validated['imagem_path']) 
+                    ? asset("uploads/{$validated['imagem_path']}")
+                    : null
+            ]);
+    }
 
 
 
