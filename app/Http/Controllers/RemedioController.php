@@ -19,7 +19,7 @@ class RemedioController extends Controller
             'horario' => 'required|string',
             'dosagem' => 'nullable|string',
             'frequencia' => 'nullable|string',
-            'imagem' => 'nullable|string',
+            'imagem' => 'required|file|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $imagemPath = null;
@@ -28,14 +28,7 @@ class RemedioController extends Controller
             $imagemPath = $request->file('imagem')->store('remedios', 'public');
         }
 
-        $remedio = Remedio::create([
-            'nome' => $request->nome,
-            'horario' => $request->horario,
-            'dosagem' => $request->dosagem,
-            'frequencia' => $request->frequencia,
-            'imagem' => $request->imagem,
-        
-        ]);
+ 
 
         return response()->json([
             'success' => true,

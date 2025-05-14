@@ -15,14 +15,22 @@ return new class extends Migration
     {
         Schema::create('remedios', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id'); 
             $table->string('nome');
             $table->string('dosagem')->nullable();
-            $table->string('horario'); 
-            $table->string('frequencia')->default('Diário'); 
+            $table->string('horario');
+            $table->string('frequencia')->default('Diário');
             $table->longText('imagem_path')->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); 
-            $table->timestamps(); 
-        });
+            $table->timestamps();
+      
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+        });;
+    }
+    
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
     
 

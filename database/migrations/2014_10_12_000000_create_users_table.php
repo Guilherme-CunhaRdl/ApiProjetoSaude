@@ -28,6 +28,11 @@ return new class extends Migration
         });
     }
 
+    public function remedios()
+{
+    return $this->hasMany(Remedio::class);
+}
+
     /**
      * Reverse the migrations.
      *
