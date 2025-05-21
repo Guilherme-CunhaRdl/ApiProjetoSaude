@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Remedio;
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
@@ -12,29 +13,28 @@ class RemedioController extends Controller
         return Remedio::all();
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nome' => 'required|string',
-            'horario' => 'required|string',
-            'dosagem' => 'nullable|string',
-            'frequencia' => 'nullable|string',
-            'imagem' => 'required|file|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+    public function insertRemedio(Request $request)
+{
+    $validated = $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'nome' => 'required|string',
+        'dosagem' => 'nullable|string',
+        'horario' => 'required|string',
+        'frequencia' => 'nullable|string',
+        'imagem_path' => 'nullable|file|image|max:2048', 
+    ]);
 
-        $imagemPath = null;
-
-        if ($request->hasFile('imagem')) {
-            $imagemPath = $request->file('imagem')->store('remedios', 'public');
-        }
-
- 
-
-        return response()->json([
-            'success' => true,
-            'data' => $remedio,
-        ], 201);
+    if ($request->hasFile('imagem_path')) {
+        $path = $request->file('imagem_path')->store('remedios', 'public');
+        $validated['imagem_path'] = asset("/public/uploads/" . $path);
     }
+
+    $remedio = Remedio::create($validated);
+
+    return response()->json($remedio, 201);
+}
+
+
 
 
     public function destroy($id)

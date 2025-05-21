@@ -10,12 +10,14 @@ class Remedio extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'nome',
-        'horario',
         'dosagem',
+        'horario',
         'frequencia',
-        'imagem',
+        'imagem_path',
     ];
+    
 
     public function user()
 {

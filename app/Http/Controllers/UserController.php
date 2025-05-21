@@ -48,7 +48,7 @@ class UserController extends Controller
                 'password' => Hash::make($request->password),
                 'peso' => $request->peso,
                 'altura' => $request->altura,
-                'imagem_path' => $imagemPath // Certifique-se que este campo existe na migration
+                'imagem_path' => $imagemPath 
             ]);
     
             return response()->json([
