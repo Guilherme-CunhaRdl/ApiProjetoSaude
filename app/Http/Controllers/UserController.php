@@ -8,9 +8,39 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+
 
 class UserController extends Controller
 {
+
+    public function deletarConta(Request $request)
+    {
+        logger('Requisição para deletar conta recebida');
+        
+        try {
+            $user = $request->user();
+            logger('Deletando usuário ID: '.$user->id);
+            
+            // Opcional: deletar registros relacionados primeiro
+            // $user->remedios()->delete(); // Se houver relacionamento
+            
+            $user->delete();
+            
+            logger('Usuário deletado com sucesso');
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Conta deletada com sucesso'
+            ]);
+        } catch (\Exception $e) {
+        
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao deletar conta'
+            ], 500);
+        }
+    }
     public function registrar(Request $request)
     {
         // Validação

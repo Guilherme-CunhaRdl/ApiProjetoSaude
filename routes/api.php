@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/registrar', [UserController::class, 'registrar']);
 Route::post('/login', [UserController::class, 'login']);
+Route::delete('/deletarConta', [UserController::class, 'deletarConta'])->middleware('auth:sanctum');
 Route::middleware('auth:sanctum')->get('/perfil', function (Request $request) {
     $user = $request->user();
     

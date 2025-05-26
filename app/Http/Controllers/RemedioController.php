@@ -14,25 +14,38 @@ class RemedioController extends Controller
     }
 
     public function insertRemedio(Request $request)
-{
-    $validated = $request->validate([
-        'user_id' => 'required|exists:users,id',
-        'nome' => 'required|string',
-        'dosagem' => 'nullable|string',
-        'horario' => 'required|string',
-        'frequencia' => 'nullable|string',
-        'imagem_path' => 'nullable|file|image|max:2048', 
-    ]);
-
-    if ($request->hasFile('imagem_path')) {
-        $path = $request->file('imagem_path')->store('remedios', 'public');
-        $validated['imagem_path'] = asset("/public/uploads/" . $path);
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'nome' => 'required|string',
+            'dosagem' => 'nullable|string',
+            'horario' => 'required|string',
+            'frequencia' => 'nullable|string',
+            'imagem_path' => 'nullable|file|image|max:2048', 
+        ]);
+    
+        if ($request->hasFile('imagem_path')) {
+            // Cria a pasta se não existir
+            if (!file_exists(public_path('uploads/remedios'))) {
+                mkdir(public_path('uploads/remedios'), 0777, true);
+            }
+            
+            // Obtém a extensão do arquivo
+            $extension = $request->file('imagem_path')->getClientOriginalExtension();
+            // Cria um nome único para o arquivo
+            $fileName = uniqid() . '.' . $extension;
+            
+            // Move o arquivo para a pasta desejada
+            $path = $request->file('imagem_path')->move(public_path('uploads/remedios'), $fileName);
+            
+            // Salva apenas o caminho relativo
+            $validated['imagem_path'] = 'uploads/remedios/' . $fileName;
+        }
+    
+        $remedio = Remedio::create($validated);
+    
+        return response()->json($remedio, 201);
     }
-
-    $remedio = Remedio::create($validated);
-
-    return response()->json($remedio, 201);
-}
 
 
 
