@@ -113,7 +113,9 @@ class UserController extends Controller
             'user' => [
                 'id' => $user->id,
                 'email' => $user->email,
-                'name' => $user->name,
+                'name' => $user->nome,
+                'peso' => $user->peso,
+                'altura' => $user->altura,
             ]
         ]);
     }
@@ -164,6 +166,10 @@ class UserController extends Controller
                     : null
             ]);
     }
+
+
+
+    
 
 
 
