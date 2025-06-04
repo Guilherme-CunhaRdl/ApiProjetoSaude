@@ -65,4 +65,45 @@ class RemedioController extends Controller
         $remedio->delete();
         return response()->json(['success' => true], 200);
     }
+
+    public function update(Request $request, $id)
+{
+    $remedio = Remedio::find($id);
+
+    if (!$remedio || $remedio->user_id !== Auth::id()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Remédio não encontrado ou não autorizado'
+        ], 404);
+    }
+
+    $validatedData = $request->validate([
+        'nome' => 'required|string|max:255',
+        'dosagem' => 'nullable|string|max:100',
+        'horario' => 'required|string|max:5',
+        'frequencia' => 'nullable|string|max:50',
+    ]);
+
+    // Validação condicional da imagem
+    if ($request->hasFile('imagem_path')) {
+        $request->validate([
+            'imagem_path' => 'image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+
+        // Remove imagem antiga se existir
+        if ($remedio->imagem_path && Storage::disk('public')->exists($remedio->imagem_path)) {
+            Storage::disk('public')->delete($remedio->imagem_path);
+        }
+
+        // Armazena a nova imagem
+        $validatedData['imagem_path'] = $request->file('imagem_path')->store('remedios', 'public');
+    }
+
+    $remedio->update($validatedData);
+
+    return response()->json([
+        'success' => true,
+        'data' => $remedio
+    ]);
+}
 }

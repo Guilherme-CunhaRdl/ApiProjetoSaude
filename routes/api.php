@@ -37,11 +37,12 @@ Route::middleware('auth:sanctum')->get('/perfil', function (Request $request) {
 Route::middleware('auth:sanctum')->post('/atualizarPerfil', [UserController::class, 'atualizarPerfil']);
 
 
-//PARTE DO REMEDIO
-Route::middleware('auth:sanctum')->group(function () {
-Route::get('/remedios', [RemedioController::class, 'index']);
-Route::post('/remedios', [RemedioController::class, 'insertRemedio']);
-Route::delete('/remedios/{id}', [RemedioController::class, 'destroy']);
+// PARTE DO REMEDIO
+Route::group(['middleware' => ['auth:sanctum']], function() {
+    Route::get('/remedios', [RemedioController::class, 'index']);
+    Route::post('/remedios', [RemedioController::class, 'insertRemedio']);
+    Route::post('/remedios/{id}/update', [RemedioController::class, 'update']); // Rota específica para update
+    Route::delete('/remedios/{id}', [RemedioController::class, 'destroy']);
 });
 
 
