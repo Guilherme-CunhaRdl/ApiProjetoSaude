@@ -81,12 +81,22 @@ class UserController extends Controller
                 'imagem_path' => $imagemPath 
             ]);
     
+
+            $token = $user->createToken('api-token')->plainTextToken;
+
             return response()->json([
-                'success' => true,
-                'message' => 'Usuário registrado com sucesso!',
-                'user' => $user,
-                'imagem_url' => asset($imagemPath)
-            ], 201);
+            'success' => true,
+            'message' => 'Usuário registrado com sucesso!',
+            'token' => $token, 
+            'user' => [
+                'id' => $user->id,
+                'nome' => $user->nome,
+                'email' => $user->email,
+                'peso' => $user->peso,
+                'altura' => $user->altura,
+                'imagem_url' => asset("storage/$imagemPath")
+            ]
+        ], 201);
     
         } catch (\Exception $e) {
             return response()->json([

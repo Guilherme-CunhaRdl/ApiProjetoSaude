@@ -3,6 +3,7 @@
 use App\Http\Controllers\RemedioController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\FrequenciaCardiacaController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -43,6 +44,15 @@ Route::post('/remedios', [RemedioController::class, 'insertRemedio']);
 Route::delete('/remedios/{id}', [RemedioController::class, 'destroy']);
 });
 
+
+
+//PARTE DA FREQUENCIA CARDIACA
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/frequencia-cardiaca', [FrequenciaCardiacaController::class, 'index']);
+    Route::post('/frequencia-cardiaca', [FrequenciaCardiacaController::class, 'store']);
+    Route::delete('/frequencia-cardiaca/{id}', [FrequenciaCardiacaController::class, 'destroy']);
+});
+Route::get('/media-frequencia/{user}', [App\Http\Controllers\FrequenciaCardiacaController::class, 'media']);
 
 
 
