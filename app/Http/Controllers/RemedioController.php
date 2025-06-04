@@ -4,66 +4,65 @@ namespace App\Http\Controllers;
 use App\Models\Remedio;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class RemedioController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Remedio::all();
+
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Não autorizado'], 401);
+        }
+
+
+        $userId = Auth::id();
+        
+   
+        return Remedio::where('user_id', $userId)->get();
     }
 
     public function insertRemedio(Request $request)
     {
+    
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
             'nome' => 'required|string',
             'dosagem' => 'nullable|string',
             'horario' => 'required|string',
             'frequencia' => 'nullable|string',
-            'imagem_path' => 'nullable|file|image|max:2048', 
+            'imagem_path' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
-    
+
+ 
+        $validated['user_id'] = Auth::id();
+
+ 
         if ($request->hasFile('imagem_path')) {
-            // Cria a pasta se não existir
-            if (!file_exists(public_path('uploads/remedios'))) {
-                mkdir(public_path('uploads/remedios'), 0777, true);
-            }
-            
-            // Obtém a extensão do arquivo
-            $extension = $request->file('imagem_path')->getClientOriginalExtension();
-            // Cria um nome único para o arquivo
-            $fileName = uniqid() . '.' . $extension;
-            
-            // Move o arquivo para a pasta desejada
-            $path = $request->file('imagem_path')->move(public_path('uploads/remedios'), $fileName);
-            
-            // Salva apenas o caminho relativo
-            $validated['imagem_path'] = 'uploads/remedios/' . $fileName;
+            $path = $request->file('imagem_path')->store('remedios', 'public');
+            $validated['imagem_path'] = $path;
         }
-    
+
         $remedio = Remedio::create($validated);
-    
+
         return response()->json($remedio, 201);
     }
-
-
-
 
     public function destroy($id)
     {
         $remedio = Remedio::find($id);
         
-        if ($remedio) {
-            // Aqui pode excluir a imagem associada ao remédio se necessário
-            if ($remedio->imagem) {
-                Storage::delete('public/remedios/' . $remedio->imagem);
-            }
-    
-            $remedio->delete();
-            return response()->json(['success' => true], 200);
+
+        if (!$remedio || $remedio->user_id !== Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Remédio não encontrado ou não autorizado'], 404);
         }
+
     
-        return response()->json(['success' => false], 404);
+        if ($remedio->imagem_path && file_exists(public_path($remedio->imagem_path))) {
+            unlink(public_path($remedio->imagem_path));
+        }
+
+        $remedio->delete();
+        return response()->json(['success' => true], 200);
     }
 }

@@ -37,9 +37,14 @@ Route::middleware('auth:sanctum')->post('/atualizarPerfil', [UserController::cla
 
 
 //PARTE DO REMEDIO
+Route::middleware('auth:sanctum')->group(function () {
 Route::get('/remedios', [RemedioController::class, 'index']);
-Route::post('/remediosRegistrar', [RemedioController::class, 'insertRemedio']);
+Route::post('/remedios', [RemedioController::class, 'insertRemedio']);
 Route::delete('/remedios/{id}', [RemedioController::class, 'destroy']);
+});
+
+
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
