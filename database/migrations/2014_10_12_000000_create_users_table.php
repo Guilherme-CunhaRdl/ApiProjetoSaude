@@ -22,10 +22,16 @@ return new class extends Migration
             $table->string('password');
             $table->string('peso')->nullable();
             $table->string('altura')->nullable();
+            $table->longText('imagem_path')->nullable(); 
             $table->rememberToken();
             $table->timestamps();
         });
     }
+
+    public function remedios()
+{
+    return $this->hasMany(Remedio::class);
+}
 
     /**
      * Reverse the migrations.
